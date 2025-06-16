@@ -94,8 +94,11 @@ function analisisSoal() {
             sumX2 += dx * dx;
             sumY2 += dy * dy;
         }
+
+        if (sumX2 === 0 || sumY2 === 0) return 0;  // <-- stabilisasi NaN
         return sumXY / Math.sqrt(sumX2 * sumY2);
     }
+
 
     let output = '<h5>Hasil Analisis</h5>';
     let totalSkor = data.map(row => row.reduce((a,b) => a + b, 0));
