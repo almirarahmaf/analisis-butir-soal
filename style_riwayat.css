@@ -1,0 +1,139 @@
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #081f5c;
+}
+
+.navbar-brand {
+    color: #F7F2EB;
+}
+
+.navbar-brand:hover {
+    color: #F7F2EB;
+}
+
+.nav-link {
+    background-color: #FFD580;
+    color: #081f5c;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-top: 2px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #FFF9F0;
+    color: #081f5c;
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 20px;
+}
+
+h2 {
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #081f5c;
+}
+
+/* Card Riwayat */
+.card {
+    border-radius: 7px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    margin-bottom: 50px;
+    border: 1px solid #081f5c;
+    background-color: white;
+}
+
+.card h5,
+.card h6{
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.card-header {
+    background-color: #081f5c !important;
+    color: #fff !important;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.card-body {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    padding: 20px;
+}
+
+/* Tabel Data Nilai Siswa */
+.table {
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.table-bordered th,
+.table-bordered td {
+    border: 2px solid #081f5c !important;
+    text-align: center;
+}
+
+.table-bordered th {
+    background-color: #efe1cf !important;
+}
+
+/* Bagian Section untuk hasil analisis */
+.section {
+    /* background-color: #f3f3f3; */
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+}
+
+.validitas {
+    background-color: rgb(214, 187, 205); 
+}
+
+.reliabilitas { 
+    background-color: #cbd183; 
+}
+
+.kesukaran { 
+    background-color: #7b89c1; 
+}
+
+.dayapembeda { 
+    background-color: #efce7b; 
+}
+
+.distribusi { 
+    background-color: #5e9dbc; 
+}
+
+.validitas .table-bordered th,
+.reliabilitas .table-bordered th,
+.kesukaran .table-bordered th,
+.dayapembeda .table-bordered th,
+.distribusi .table-bordered th {
+    background-color: rgba(214, 214, 214, 0.837) !important;
+}
+
+/* Kesimpulan */
+.kesimpulan {
+    background-color: #f3f3f3;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    border: 3px solid #081f5c;
+}

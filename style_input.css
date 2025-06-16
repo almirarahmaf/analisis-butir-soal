@@ -1,0 +1,170 @@
+.hidden {
+  display: none;
+}
+
+table input {
+  width: 60px;
+  text-align: center;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar */
+.navbar{
+    background-color: #081f5c;
+    width: 100vw;
+}
+
+.navbar-brand{
+    color: #F7F2EB;
+}
+
+.navbar-brand:hover{
+    color: #F7F2EB;
+}
+
+.nav-item a {
+    color: #F7F2EB;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item a:hover{
+    background-color: #FFF9F0;
+    color: #081f5c;
+}
+
+.nav-link.riwayat {
+    background-color: #FFD580;
+    color: #081f5c;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-top: 2px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.nav-link.riwayat:hover {
+    background-color: #FFF9F0;
+    color: #081f5c;
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    margin-top: 20px;
+}
+
+h4,
+h5{
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Generate Tabel */
+.table{
+    border-collapse: collapse;
+}
+
+.table-bordered td,
+.table-bordered th {
+    border: 2px solid #081f5c;
+    text-align: center;
+}
+
+.table-bordered th{
+    background-color: #efe1cf;
+}
+
+/* Tabel Section */
+.section {
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+  /* border: 2px solid #ddd; */
+}
+
+/* Uji Validitas */
+.validitas {
+  background-color: rgb(214, 187, 205);
+}
+
+.reliabilitas {
+    background-color: #cbd183;
+}
+
+.kesukaran {
+  background-color: #7b89c1;
+}
+
+.dayapembeda {
+  background-color: #efce7b;
+}
+
+.distribusi {
+  background-color: #5e9dbc;
+}
+
+.validitas .table-bordered th,
+.reliabilitas .table-bordered th,
+.kesukaran .table-bordered th,
+.dayapembeda .table-bordered th,
+.distribusi .table-bordered th {
+    background-color: rgba(214, 214, 214, 0.837) !important;
+}
+
+.validitas h6,
+.reliabilitas h6,
+.kesukaran h6,
+.dayapembeda h6,
+.distribusi h6{
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+/* Kesimpulan */
+.kesimpulan{
+    background-color: #f3f3f3;
+    border-radius: 10px;
+    padding: 20px;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    border: 3px solid #081f5c;
+}
+
+/* Button */
+button {
+    background-color: #081f5c !important;
+    width: 100px;
+    height: 40px;
+    color: #F7F2EB !important;
+    margin-top: 20px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 10px !important;
+    margin-bottom: 15px;
+    transition: all 0.5s ease;
+    width: max-content;
+}
+
+button:hover{
+    background-color: white !important;
+    color: #081f5c !important;
+    border: 2px solid #081f5c !important;
+    border-radius: 10px !important;
+}
+
+#btnSimpan{
+    margin-left: 10px;
+}

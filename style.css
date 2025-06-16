@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Navbar */
+.navbar{
+    background-color: #081f5c;
+}
+
+.navbar-brand{
+    color: #F7F2EB;
+}
+
+.navbar-brand:hover{
+    color: #F7F2EB;
+}
+
+.nav-item a {
+    color: #F7F2EB;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.nav-item a:hover{
+    background-color: #FFF9F0;
+    color: #081f5c;
+}
+
+.nav-link.riwayat {
+    background-color: #FFD580;
+    color: #081f5c;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-top: 2px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.nav-link.riwayat:hover {
+    background-color: #FFF9F0;
+    color: #081f5c;
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    width: 100%;
+    max-width: 600px;
+}
+
+.container{
+    padding-left: 20px;
+    background-color: #FFF9F0;
+    border-radius: 50px;
+    padding: 20px 50px;
+    color: #081f5c;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    border: 3px solid #081f5c;
+}
+
+.container h1{
+    font-weight: bold;
+    text-align: center;
+    font-size: 40px;
+}
+
+.formSiswa label{
+    font-weight: 500;
+}
+
+.formSiswa{
+    margin-top: 30px;
+}
+
+.formSoal,
+.formTabel{
+    margin-top: 20px;
+}
+
+.formSiswa input,
+.formSoal input,
+.formTabel input{
+    border: 2px solid #081f5c;
+}
+
+/* Button */
+.button-wrapper {
+    text-align: right;
+}
+
+button {
+    background-color: #081f5c !important;
+    width: 100px;
+    height: 40px;
+    color: #F7F2EB !important;
+    margin-top: 20px;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    border-radius: 10px !important;
+    margin-bottom: 15px;
+    transition: all 0.5s ease;
+}
+
+button:hover{
+    background-color: white !important;
+    color: #081f5c !important;
+    border: 2px solid #081f5c !important;
+    border-radius: 10px !important;
+}

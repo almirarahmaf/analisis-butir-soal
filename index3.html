@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analisis Butir Soal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .hidden { display: none; }
+    table input { width: 60px; text-align: center; }
+  </style>
+</head>
+<body class="p-4">
+  <div id="page1">
+    <h2 class="mb-3">Analisis Butir Soal</h2>
+    <div class="mb-3">
+      <label for="jumlahSiswa" class="form-label">Jumlah Siswa</label>
+      <input type="number" class="form-control" id="jumlahSiswa" min="1">
+    </div>
+    <div class="mb-3">
+      <label for="jumlahSoal" class="form-label">Jumlah Soal</label>
+      <input type="number" class="form-control" id="jumlahSoal" min="1">
+    </div>
+    <div class="mb-3">
+      <label for="rTabel" class="form-label">Nilai r Tabel</label>
+      <input type="number" class="form-control" id="rTabel" step="0.0001" min="0" max="1">
+    </div>
+    <button class="btn btn-primary" onclick="generateTable()">Submit</button>
+    <a href="riwayat.php" class="btn btn-link mt-2">Lihat Riwayat Analisis Sebelumnya</a>
+  </div>
+
+  <div id="page2" class="hidden">
+    <h4 class="mb-3">Input Nilai Siswa</h4>
+    <div id="tabelContainer"></div>
+    <button class="btn btn-success mt-3" onclick="analisisSoal()">Analisis Soal</button>
+    <div id="hasilAnalisis" class="mt-4"></div>
+  </div>
+
+  <script>
+    let jumlahSiswa, jumlahSoal, rTabel;
+
+    function generateTable() {
+      jumlahSiswa = parseInt(document.getElementById('jumlahSiswa').value);
+      jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
+      rTabel = parseFloat(document.getElementById('rTabel').value);
+
+      if (!jumlahSiswa || !jumlahSoal || isNaN(rTabel)) {
+        alert('Mohon isi semua field dengan benar.');
+        return;
+      }
+
+      document.getElementById('page1').classList.add('hidden');
+      document.getElementById('page2').classList.remove('hidden');
+
+      let container = document.getElementById('tabelContainer');
+      let table = '<table class="table table-bordered"><thead><tr><th>No</th><th>Siswa</th>';
+      for (let i = 1; i <= jumlahSoal; i++) {
+        table += `<th>Soal ${i}</th>`;
+      }
+      table += '</tr></thead><tbody>';
+      for (let i = 1; i <= jumlahSiswa; i++) {
+        table += `<tr><td>${i}</td><td>Siswa ${i}</td>`;
+        for (let j = 1; j <= jumlahSoal; j++) {
+          table += `<td><input type="number" min="0" max="1" id="s${i}q${j}"/></td>`;
+        }
+        table += '</tr>';
+      }
+      table += '</tbody></table>';
+      container.innerHTML = table;
+    }
+
+    function analisisSoal() {
+      const data = [];
+      for (let i = 1; i <= jumlahSiswa; i++) {
+        const row = [];
+        for (let j = 1; j <= jumlahSoal; j++) {
+          const val = parseInt(document.getElementById(`s${i}q${j}`).value) || 0;
+          row.push(val);
+        }
+        data.push(row);
+      }
+
+      let output = '<h5>Hasil Analisis</h5>';
+
+      let totalSkor = data.map(row => row.reduce((a,b) => a + b, 0));
+      let skorMean = totalSkor.reduce((a, b) => a + b, 0) / jumlahSiswa;
+      let totalVar = totalSkor.map(s => Math.pow(s - skorMean, 2)).reduce((a, b) => a + b, 0) / (jumlahSiswa - 1);
+
+      let p = [], q = [], pq = [], rHitung = [], validitas = [];
+
+      for (let j = 0; j < jumlahSoal; j++) {
+        let benar = data.reduce((sum, row) => sum + row[j], 0);
+        let pj = benar / jumlahSiswa;
+        let qj = 1 - pj;
+        p.push(pj);
+        q.push(qj);
+        pq.push(pj * qj);
+
+        let skorSoal = data.map(row => row[j]);
+        let meanSoal = skorSoal.reduce((a,b)=>a+b,0)/jumlahSiswa;
+        let cov = 0;
+        for (let i = 0; i < jumlahSiswa; i++) {
+          cov += (skorSoal[i] - meanSoal) * (totalSkor[i] - skorMean);
+        }
+        cov /= jumlahSiswa;
+        let sdSoal = Math.sqrt(meanSoal * (1 - meanSoal));
+        let r = cov / (sdSoal * Math.sqrt(totalVar));
+        rHitung.push(r);
+        validitas.push(r >= rTabel ? 'Valid' : 'Tidak Valid');
+      }
+
+      let KR20 = (jumlahSoal / (jumlahSoal - 1)) * (1 - (pq.reduce((a,b)=>a+b,0) / totalVar));
+
+      let index27 = Math.floor(0.27 * jumlahSiswa);
+      let sorted = data.map((row, idx) => ({ row, total: totalSkor[idx], no: idx + 1 }))
+                       .sort((a, b) => b.total - a.total);
+      let atas = sorted.slice(0, index27);
+      let bawah = sorted.slice(-index27);
+
+      output += '<h6>Uji Validitas</h6><table class="table table-bordered"><thead><tr><th>Soal</th><th>r hitung</th><th>r tabel</th><th>Hasil</th></tr></thead><tbody>';
+      for (let j = 0; j < jumlahSoal; j++) {
+        output += `<tr><td>${j+1}</td><td>${rHitung[j].toFixed(4)}</td><td>${rTabel}</td><td>${validitas[j]}</td></tr>`;
+      }
+      output += '</tbody></table>';
+
+      output += '<h6>Uji Reliabilitas (KR-20)</h6><table class="table table-bordered"><thead><tr><th>Soal</th><th>P</th><th>Q</th><th>PQ</th></tr></thead><tbody>';
+      for (let j = 0; j < jumlahSoal; j++) {
+        output += `<tr><td>${j+1}</td><td>${p[j].toFixed(4)}</td><td>${q[j].toFixed(4)}</td><td>${pq[j].toFixed(4)}</td></tr>`;
+      }
+      output += `</tbody></table><p><strong>Reliabilitas:</strong> ${KR20.toFixed(4)} (${KR20 < 0.7 ? 'Rendah' : 'Tinggi'})</p>`;
+
+      output += '<h6>Tingkat Kesukaran</h6><table class="table table-bordered"><thead><tr><th>Soal</th><th>P</th><th>Kategori</th></tr></thead><tbody>';
+      for (let j = 0; j < jumlahSoal; j++) {
+        let kategori = p[j] < 0.3 ? 'Sukar' : (p[j] <= 0.7 ? 'Sedang' : 'Mudah');
+        output += `<tr><td>${j+1}</td><td>${p[j].toFixed(4)}</td><td>${kategori}</td></tr>`;
+      }
+      output += '</tbody></table>';
+
+      output += '<h6>Daya Pembeda</h6><table class="table table-bordered"><thead><tr><th>Soal</th><th>Benar Atas</th><th>Benar Bawah</th><th>Daya Pembeda</th><th>Kategori</th></tr></thead><tbody>';
+      for (let j = 0; j < jumlahSoal; j++) {
+        let atasBenar = atas.reduce((sum, s) => sum + s.row[j], 0);
+        let bawahBenar = bawah.reduce((sum, s) => sum + s.row[j], 0);
+        let dp = (atasBenar - bawahBenar) / index27;
+        let kategori = dp >= 0.7 ? 'Sangat Baik' : dp >= 0.4 ? 'Baik' : dp >= 0.2 ? 'Cukup' : 'Buruk';
+        output += `<tr><td>${j+1}</td><td>${atasBenar}</td><td>${bawahBenar}</td><td>${dp.toFixed(4)}</td><td>${kategori}</td></tr>`;
+      }
+      output += '</tbody></table>';
+
+      output += '<h6>Distribusi Total Skor Siswa</h6><table class="table table-bordered"><thead><tr><th>Siswa</th><th>Total Skor</th><th>Kategori</th></tr></thead><tbody>';
+      sorted.forEach((s, i) => {
+        let kategori = i < index27 ? 'Atas' : (i >= jumlahSiswa - index27 ? 'Bawah' : '');
+        output += `<tr><td>Siswa ${s.no}</td><td>${s.total}</td><td>${kategori}</td></tr>`;
+      });
+      output += `</tbody></table><p><strong>Varians Skor Total:</strong> ${totalVar.toFixed(4)}</p>`;
+
+      let totalValid = validitas.filter(v => v === 'Valid').length;
+      let kesimpulan = `<p><strong>Kesimpulan:</strong> Dari ${jumlahSoal} soal, ${totalValid} soal dinyatakan valid. Reliabilitas tes adalah ${KR20.toFixed(4)} (${KR20 < 0.7 ? 'rendah' : 'tinggi'}). Sebagian besar soal memiliki tingkat kesukaran sedang dan daya pembeda bervariasi. Secara keseluruhan, tes ${KR20 >= 0.7 && totalValid >= jumlahSoal * 0.7 ? 'layak digunakan' : 'perlu perbaikan lebih lanjut'}.</p>`;
+
+      output += kesimpulan;
+      document.getElementById('hasilAnalisis').innerHTML = output;
+
+      // Kirim data ke simpan.php tanpa menyertakan tabel nilai siswa di output
+      fetch('simpan.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          jumlah_siswa: jumlahSiswa,
+          jumlah_soal: jumlahSoal,
+          r_tabel: rTabel,
+          hasil: output, // tanpa nilai siswa
+          nilai_siswa: JSON.stringify(data) // hanya nilai disimpan terpisah
+        })
+      })
+      .then(res => res.text())
+      .then(data => {
+        alert("Hasil berhasil disimpan.");
+      })
+      .catch(err => {
+        alert("Gagal menyimpan hasil: " + err);
+      });
+    }
+  </script>
+</body>
+</html>
