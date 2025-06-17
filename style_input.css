@@ -167,4 +167,10 @@ button:hover{
 
 #btnSimpan{
     margin-left: 10px;
+    border-radius: 10px !important;
+}
+
+#tabelContainerWrapper {
+    overflow-x: auto;
+    max-width: 100%;
 }

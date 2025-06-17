@@ -1,4 +1,3 @@
-<!-- FILE: input.html (versi Solusi B) -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -11,49 +10,93 @@
     <link href="style_input.css" rel="stylesheet">
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand">Analisis Butir Soal</a>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="index.html">Beranda</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link riwayat" href="riwayat.php">Riwayat</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-
-    <div class="main-content">
-        <div class="container-fluid">
-            <h4>Input Nilai Siswa (0 atau 1)</h4>
-
-            <div id="tabelContainer"></div>
-            <button class="btn btn-success mt-3" onclick="analisisSoal()">Analisis Soal</button>
-            <div id="hasilAnalisis" class="mt-4"></div>
-        </div>
+<nav class="navbar navbar-expand-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand">Analisis Butir Soal</a>
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="index.html">Beranda</a></li>
+            <li class="nav-item"><a class="nav-link riwayat" href="riwayat.php">Riwayat</a></li>
+        </ul>
     </div>
-  
-    <script src="script.js"></script>
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        jumlahSiswa = parseInt(sessionStorage.getItem("jumlahSiswa"));
-        jumlahSoal = parseInt(sessionStorage.getItem("jumlahSoal"));
-        rTabel = parseFloat(sessionStorage.getItem("rTabel"));
-        nilaiSiswa = JSON.parse(sessionStorage.getItem("nilaiSiswa")) || null;
+</nav>
 
-        generateTable();
+<div class="main-content">
+    <div class="container-fluid">
+        <!-- Header info -->
+        <div id="infoHeader" class="mb-4 p-3 border bg-light rounded" style="display: none;">
+        </div>
 
-        // Auto load nilai jika ada data edit
-        if (nilaiSiswa) {
-            for (let i = 1; i <= jumlahSiswa; i++) {
-                for (let j = 1; j <= jumlahSoal; j++) {
-                    document.getElementById(`s${i}q${j}`).value = nilaiSiswa[i-1][j-1];
-                }
-            }
+        <h4>Input Nilai Siswa (pisahkan dengan spasi atau tab)</h4>
+
+        <div style="overflow-x: auto" id="tabelContainerWrapper">
+            <div id="tabelContainer"></div>
+        </div>
+
+        <button class="btn btn-success mt-3" id="btnAnalisis">Analisis Soal</button>
+        <div id="hasilAnalisis" class="mt-4"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    jumlahSiswa = parseInt(sessionStorage.getItem("jumlahSiswa"));
+    jumlahSoal = parseInt(sessionStorage.getItem("jumlahSoal"));
+    rTabel = parseFloat(sessionStorage.getItem("rTabel"));
+    nilaiSiswa = JSON.parse(sessionStorage.getItem("nilaiSiswa")) || null;
+
+    // Header
+    const mapel = sessionStorage.getItem("mapel") || "-";
+    const tahunAjar = sessionStorage.getItem("tahunAjar") || "-";
+    const kelas = sessionStorage.getItem("kelas") || "-";
+    document.getElementById("infoMapel").textContent = mapel;
+    document.getElementById("infoTahun").textContent = tahunAjar;
+    document.getElementById("infoKelas").textContent = kelas;
+    document.getElementById("infoHeader").style.display = "block";
+
+    generateTable();
+
+    // Auto-isi textarea jika data dari edit
+    if (nilaiSiswa) {
+        for (let i = 1; i <= jumlahSiswa; i++) {
+            const nilaiBaris = nilaiSiswa[i - 1].join(' ');
+            document.getElementById(`s${i}`).value = nilaiBaris;
         }
-    });
-    </script>
+    }
+});
+
+function generateTable() {
+    const container = document.getElementById("tabelContainer");
+    const namaSiswa = JSON.parse(sessionStorage.getItem("namaSiswa")) || [];
+
+    let table = `
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Siswa</th>
+                    <th>Nilai Soal</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 1; i <= jumlahSiswa; i++) {
+        const nama = namaSiswa[i - 1] || `Siswa ${i}`;
+        table += `
+            <tr>
+                <td>${i}</td>
+                <td>${nama}</td>
+                <td>
+                    <textarea class="form-control nilai-input" id="s${i}" rows="1" placeholder="Contoh: 1 0 1 0 1 ..."></textarea>
+                </td>
+            </tr>
+        `;
+    }
+
+    table += '</tbody></table>';
+    container.innerHTML = table;
+}
+</script>
 </body>
 </html>

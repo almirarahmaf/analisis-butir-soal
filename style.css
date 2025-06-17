@@ -63,6 +63,7 @@ body {
 .main-content {
     width: 100%;
     max-width: 600px;
+    margin-top: 50px;
 }
 
 .container{
@@ -85,18 +86,26 @@ body {
     font-weight: 500;
 }
 
-.formSiswa{
+.formMapel{
     margin-top: 30px;
 }
 
 .formSoal,
-.formTabel{
+.formTabel,
+.formKelas,
+.formTahun,
+.formKelas,
+.formSiswa{
     margin-top: 20px;
 }
 
 .formSiswa input,
 .formSoal input,
-.formTabel input{
+.formTabel input,
+.formMapel input,
+.formKelas input,
+.formTahun input,
+.formNama textarea{
     border: 2px solid #081f5c;
 }
 

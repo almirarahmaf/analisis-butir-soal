@@ -1,4 +1,3 @@
-<!-- FILE: edit.php (versi Solusi B) -->
 <?php
 include 'config.php';
 
@@ -9,10 +8,18 @@ if (!isset($_GET['id'])) {
 $id = $_GET['id'];
 $result = $conn->query("SELECT * FROM hasil_analisis WHERE id = $id");
 $data = $result->fetch_assoc();
+
 $nilai_data = json_decode($data['nilai_siswa'], true);
 $jumlah_siswa = $data['jumlah_siswa'];
 $jumlah_soal = $data['jumlah_soal'];
 $r_tabel = $data['r_tabel'];
+
+// Metadata tambahan
+$mapel = $data['mapel'] ?? '';
+$tahun_ajar = $data['tahun_ajar'] ?? '';
+$kelas = $data['kelas'] ?? '';
+$nama_siswa = $data['nama_siswa'] ?? '[]';
+$nama_array = json_decode($nama_siswa, true);
 ?>
 
 <!DOCTYPE html>
@@ -26,33 +33,46 @@ $r_tabel = $data['r_tabel'];
     <div class="container">
         <h2>Edit Nilai Siswa</h2>
         <form id="editForm">
+            <!-- Hidden input -->
             <input type="hidden" id="jumlahSiswa" value="<?= $jumlah_siswa ?>">
             <input type="hidden" id="jumlahSoal" value="<?= $jumlah_soal ?>">
             <input type="hidden" id="rTabel" value="<?= $r_tabel ?>">
             <input type="hidden" id="idEdit" value="<?= $id ?>">
+            <input type="hidden" id="mapel" value="<?= htmlspecialchars($mapel) ?>">
+            <input type="hidden" id="tahunAjar" value="<?= htmlspecialchars($tahun_ajar) ?>">
+            <input type="hidden" id="kelas" value="<?= htmlspecialchars($kelas) ?>">
+            <input type="hidden" id="namaSiswa" value='<?= htmlspecialchars($nama_siswa) ?>'>
 
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Siswa</th>
-                        <?php for ($j = 1; $j <= $jumlah_soal; $j++): ?>
-                            <th>Soal <?= $j ?></th>
-                        <?php endfor; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($nilai_data as $i => $baris): ?>
+            <div class="mb-3">
+                <strong>Mata Pelajaran:</strong> <?= htmlspecialchars($mapel) ?><br>
+                <strong>Tahun Ajaran:</strong> <?= htmlspecialchars($tahun_ajar) ?><br>
+                <strong>Kelas:</strong> <?= htmlspecialchars($kelas) ?>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
                         <tr>
-                            <td>Siswa <?= $i + 1 ?></td>
-                            <?php foreach ($baris as $j => $nilai): ?>
-                                <td>
-                                    <input type="number" min="0" max="1" id="s<?= $i + 1 ?>q<?= $j + 1 ?>" value="<?= $nilai ?>" class="form-control" required>
-                                </td>
-                            <?php endforeach; ?>
+                            <th>Nama Siswa</th>
+                            <?php for ($j = 1; $j <= $jumlah_soal; $j++): ?>
+                                <th>Soal <?= $j ?></th>
+                            <?php endfor; ?>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($nilai_data as $i => $baris): ?>
+                            <tr>
+                                <td><?= isset($nama_array[$i]) ? htmlspecialchars($nama_array[$i]) : "Siswa " . ($i + 1) ?></td>
+                                <?php foreach ($baris as $j => $nilai): ?>
+                                    <td>
+                                        <input type="number" min="0" max="1" id="s<?= $i + 1 ?>q<?= $j + 1 ?>" value="<?= $nilai ?>" class="form-control form-control-sm" style="min-width: 80px;" required>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
 
             <button type="button" id="lanjutEdit" class="btn btn-success">Lanjut Analisis</button>
             <a href="riwayat.php" class="btn btn-secondary">Kembali</a>
@@ -65,6 +85,11 @@ $r_tabel = $data['r_tabel'];
         let jumlahSoal = parseInt(document.getElementById("jumlahSoal").value);
         let rTabel = parseFloat(document.getElementById("rTabel").value);
         let idEdit = document.getElementById("idEdit").value;
+
+        const mapel = document.getElementById("mapel").value;
+        const tahunAjar = document.getElementById("tahunAjar").value;
+        const kelas = document.getElementById("kelas").value;
+        const namaSiswaRaw = document.getElementById("namaSiswa").value;
 
         const nilai = [];
         for (let i = 1; i <= jumlahSiswa; i++) {
@@ -81,6 +106,10 @@ $r_tabel = $data['r_tabel'];
         sessionStorage.setItem("rTabel", rTabel);
         sessionStorage.setItem("nilaiSiswa", JSON.stringify(nilai));
         sessionStorage.setItem("idEdit", idEdit);
+        sessionStorage.setItem("mapel", mapel);
+        sessionStorage.setItem("tahunAjar", tahunAjar);
+        sessionStorage.setItem("kelas", kelas);
+        sessionStorage.setItem("namaSiswa", namaSiswaRaw);
 
         window.location.href = "input.html";
     });

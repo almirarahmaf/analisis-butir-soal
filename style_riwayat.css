@@ -137,3 +137,13 @@ h2 {
     box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
     border: 3px solid #081f5c;
 }
+
+@media screen and (max-width: 768px) {
+    .main-content .container {
+        max-width: 100%;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+}

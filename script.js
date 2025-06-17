@@ -1,22 +1,37 @@
-let jumlahSiswa, jumlahSoal, rTabel, nilaiSiswa = null, idEdit = null;
-let hasilAnalisis = ""; 
+let jumlahSiswa, jumlahSoal, rTabel, nilaiSiswa = null, idEdit = null, hasilAnalisis = "";
 
 document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById("btnSubmit");
     if (submitBtn) {
         submitBtn.addEventListener("click", () => {
-            jumlahSiswa = parseInt(document.getElementById('jumlahSiswa').value);
-            jumlahSoal = parseInt(document.getElementById('jumlahSoal').value);
-            rTabel = parseFloat(document.getElementById('rTabel').value);
+            jumlahSiswa = parseInt(document.getElementById("jumlahSiswa").value);
+            jumlahSoal = parseInt(document.getElementById("jumlahSoal").value);
+            rTabel = parseFloat(document.getElementById("rTabel").value);
 
-            if (!jumlahSiswa || !jumlahSoal || isNaN(rTabel)) {
-                alert('Mohon isi semua field dengan benar.');
+            const mapel = document.getElementById("mapel").value.trim();
+            const tahunAjar = document.getElementById("tahunAjar").value.trim();
+            const kelas = document.getElementById("kelas").value.trim();
+            const daftarNama = document.getElementById("daftarNama").value.trim();
+
+            const namaArray = daftarNama.split("\n").map(n => n.trim()).filter(n => n !== "");
+
+            if (!jumlahSiswa || !jumlahSoal || isNaN(rTabel) || !mapel || !tahunAjar || !kelas || !daftarNama) {
+                alert("Mohon isi semua field dengan benar.");
+                return;
+            }
+
+            if (namaArray.length !== jumlahSiswa) {
+                alert(`Jumlah nama siswa (${namaArray.length}) tidak sama dengan jumlah siswa (${jumlahSiswa}).`);
                 return;
             }
 
             sessionStorage.setItem("jumlahSiswa", jumlahSiswa);
             sessionStorage.setItem("jumlahSoal", jumlahSoal);
             sessionStorage.setItem("rTabel", rTabel);
+            sessionStorage.setItem("mapel", mapel);
+            sessionStorage.setItem("tahunAjar", tahunAjar);
+            sessionStorage.setItem("kelas", kelas);
+            sessionStorage.setItem("namaSiswa", JSON.stringify(namaArray));
             sessionStorage.removeItem("nilaiSiswa");
             sessionStorage.removeItem("idEdit");
 
@@ -31,40 +46,49 @@ document.addEventListener("DOMContentLoaded", () => {
         nilaiSiswa = JSON.parse(sessionStorage.getItem("nilaiSiswa")) || null;
         idEdit = sessionStorage.getItem("idEdit") || null;
 
+        const mapel = sessionStorage.getItem("mapel") || "-";
+        const tahunAjar = sessionStorage.getItem("tahunAjar") || "-";
+        const kelas = sessionStorage.getItem("kelas") || "-";
+
+        const header = document.createElement("div");
+        header.className = "mb-4 p-3 border bg-light rounded";
+        header.innerHTML = `<strong>Mata Pelajaran:</strong> ${mapel}<br><strong>Tahun Ajaran:</strong> ${tahunAjar}<br><strong>Kelas:</strong> ${kelas}`;
+
+        const container = document.querySelector(".main-content .container-fluid") || document.querySelector(".main-content");
+        if (container) container.prepend(header);
+
         generateTable();
 
         if (nilaiSiswa) {
             for (let i = 1; i <= jumlahSiswa; i++) {
-                for (let j = 1; j <= jumlahSoal; j++) {
-                    document.getElementById(`s${i}q${j}`).value = nilaiSiswa[i-1][j-1];
-                }
+                const nilaiBaris = nilaiSiswa[i - 1].join(' ');
+                document.getElementById(`s${i}`).value = nilaiBaris;
             }
         }
 
         if (!document.getElementById("btnSimpan")) {
             let simpanBtn = document.createElement("button");
             simpanBtn.innerText = "Simpan Hasil";
-            simpanBtn.className = "btn btn-primary mt-3";
+            simpanBtn.className = "btn btn-success mt-3 px-4 py-2 fw-bold rounded-pill";
             simpanBtn.id = "btnSimpan";
             simpanBtn.onclick = simpanHasil;
             document.querySelector(".main-content").appendChild(simpanBtn);
+        }
+
+        const analisisBtn = document.getElementById("btnAnalisis");
+        if (analisisBtn) {
+            analisisBtn.addEventListener("click", analisisSoal);
         }
     }
 });
 
 function generateTable() {
-    let container = document.getElementById('tabelContainer');
-    let table = '<table class="table table-bordered"><thead><tr><th>No</th><th>Siswa</th>';
-    for (let i = 1; i <= jumlahSoal; i++) {
-        table += `<th>Soal ${i}</th>`;
-    }
-    table += '</tr></thead><tbody>';
+    let container = document.getElementById("tabelContainer");
+    let namaSiswa = JSON.parse(sessionStorage.getItem("namaSiswa")) || [];
+
+    let table = '<table class="table table-bordered"><thead><tr><th>No</th><th>Siswa</th><th>Nilai (pisahkan dengan spasi/tab)</th></tr></thead><tbody>';
     for (let i = 1; i <= jumlahSiswa; i++) {
-        table += `<tr><td>${i}</td><td>Siswa ${i}</td>`;
-        for (let j = 1; j <= jumlahSoal; j++) {
-            table += `<td><input type="number" min="0" max="1" id="s${i}q${j}"/></td>`;
-        }
-        table += '</tr>';
+        table += `<tr><td>${i}</td><td>${namaSiswa[i - 1] || 'Siswa ' + i}</td><td><textarea id="s${i}" class="form-control nilai-input" rows="1" placeholder="Contoh: 1 0 1 0 1"></textarea></td></tr>`;
     }
     table += '</tbody></table>';
     container.innerHTML = table;
@@ -73,12 +97,18 @@ function generateTable() {
 function analisisSoal() {
     const data = [];
     for (let i = 1; i <= jumlahSiswa; i++) {
-        const row = [];
-        for (let j = 1; j <= jumlahSoal; j++) {
-            const val = parseInt(document.getElementById(`s${i}q${j}`).value) || 0;
-            row.push(val);
+        const nilaiStr = document.getElementById(`s${i}`).value.trim().split(/\s+/);
+        if (nilaiStr.length !== jumlahSoal) {
+            alert(`Jumlah nilai siswa ke-${i} tidak sesuai jumlah soal (${jumlahSoal})`);
+            return;
         }
+        const row = nilaiStr.map(val => parseInt(val));
         data.push(row);
+    }
+
+    if (data.length === 0 || data[0].length === 0) {
+        alert("Mohon lengkapi data sebelum dianalisis.");
+        return;
     }
 
     function korelasiPearson(x, y) {
@@ -95,10 +125,9 @@ function analisisSoal() {
             sumY2 += dy * dy;
         }
 
-        if (sumX2 === 0 || sumY2 === 0) return 0;  // <-- stabilisasi NaN
+        if (sumX2 === 0 || sumY2 === 0) return 0;
         return sumXY / Math.sqrt(sumX2 * sumY2);
     }
-
 
     let output = '<h5>Hasil Analisis</h5>';
     let totalSkor = data.map(row => row.reduce((a,b) => a + b, 0));
@@ -152,7 +181,15 @@ function analisisSoal() {
     // Tingkat Kesukaran
     output += '<div class="section kesukaran"><h6>Tingkat Kesukaran</h6><table class="table table-bordered"><thead><tr><th>Soal</th><th>P</th><th>Kategori</th></tr></thead><tbody>';
     for (let j = 0; j < jumlahSoal; j++) {
-        let kategori = p[j] < 0.31 ? 'Sukar' : (p[j] < 0.71 ? 'Sedang' : 'Mudah');
+        let kategori;
+        if (p[j] < 0.31) {
+            kategori = 'Sukar';
+        } else if (p[j] < 0.71) {
+            kategori = 'Sedang';
+        } else {
+            kategori = 'Mudah';
+        }
+
         output += `<tr><td>${j + 1}</td><td>${p[j].toFixed(4)}</td><td>${kategori}</td></tr>`;
     }
     output += '</tbody></table></div>';
@@ -163,16 +200,30 @@ function analisisSoal() {
         let atasBenar = atas.reduce((sum, s) => sum + s.row[j], 0);
         let bawahBenar = bawah.reduce((sum, s) => sum + s.row[j], 0);
         let dp = (atasBenar - bawahBenar) / index27;
-        let kategori = dp >= 0.7 ? 'Sangat Baik' : dp >= 0.4 ? 'Baik' : dp >= 0.2 ? 'Cukup' : 'Buruk';
+        let kategori;
+        if (dp < 0) {
+            kategori = 'Sangat Buruk';
+        } else if (dp < 0.20) {
+            kategori = 'Buruk';
+        } else if (dp < 0.30) {
+            kategori = 'Cukup';
+        } else if (dp < 0.40) {
+            kategori = 'Baik';
+        } else {
+            kategori = 'Sangat Baik';
+        }
+
         output += `<tr><td>${j + 1}</td><td>${atasBenar}</td><td>${bawahBenar}</td><td>${dp.toFixed(4)}</td><td>${kategori}</td></tr>`;
     }
     output += '</tbody></table></div>';
 
-    // Distribusi Skor
+    // Bagian Distribusi Skor dengan nama asli siswa
+    let namaSiswa = JSON.parse(sessionStorage.getItem("namaSiswa")) || [];
     output += '<div class="section distribusi"><h6>Distribusi Total Skor Siswa</h6><table class="table table-bordered"><thead><tr><th>Siswa</th><th>Total Skor</th><th>Kategori</th></tr></thead><tbody>';
     sorted.forEach((s, i) => {
         let kategori = i < index27 ? 'Atas' : (i >= jumlahSiswa - index27 ? 'Bawah' : '');
-        output += `<tr><td>Siswa ${s.no}</td><td>${s.total}</td><td>${kategori}</td></tr>`;
+        let nama = namaSiswa[s.no - 1] || `Siswa ${s.no}`;
+        output += `<tr><td>${nama}</td><td>${s.total}</td><td>${kategori}</td></tr>`;
     });
     output += `</tbody></table><p><strong>Varians Skor Total:</strong> ${totalVar.toFixed(4)}</p></div>`;
 
@@ -196,28 +247,25 @@ function analisisSoal() {
     let dominanPembeda = Object.entries(kategoriPembeda).sort((a,b)=>b[1]-a[1])[0][0];
 
     // Tentukan kelayakan
+    let totalValid = validitas.filter(v => v === 'Valid').length;
     let layak = (KR20 >= 0.7 && totalValid >= jumlahSoal * 0.7) 
         ? "layak digunakan" 
         : "perlu perbaikan lebih lanjut";
 
     // Kesimpulan
     output += '<div class="section kesimpulan">';
-    let totalValid = validitas.filter(v => v === 'Valid').length;
     let kesimpulan = `<p><strong>Kesimpulan:</strong> Dari ${jumlahSoal} soal, ${totalValid} soal dinyatakan valid. Reliabilitas tes adalah ${isNaN(KR20) ? 'NaN' : KR20.toFixed(4)} (${KR20 < 0.7 ? 'rendah' : 'tinggi'}). Sebagian besar soal memiliki tingkat kesukaran ${dominanKesukaran.toLowerCase()} dan daya pembeda ${dominanPembeda.toLowerCase()}. Secara keseluruhan, tes ${layak}.</p>`;
     output += kesimpulan + '</div>';
 
-    document.getElementById('hasilAnalisis').innerHTML = output;
     hasilAnalisis = output;
+    document.getElementById('hasilAnalisis').innerHTML = output;
 }
 
 function simpanHasil() {
     const data = [];
     for (let i = 1; i <= jumlahSiswa; i++) {
-        const row = [];
-        for (let j = 1; j <= jumlahSoal; j++) {
-            const val = parseInt(document.getElementById(`s${i}q${j}`).value) || 0;
-            row.push(val);
-        }
+        const nilaiStr = document.getElementById(`s${i}`).value.trim().split(/\s+/);
+        const row = nilaiStr.map(val => parseInt(val));
         data.push(row);
     }
 
@@ -226,13 +274,22 @@ function simpanHasil() {
         return;
     }
 
+    const mapel = sessionStorage.getItem("mapel") || "";
+    const tahunAjar = sessionStorage.getItem("tahunAjar") || "";
+    const kelas = sessionStorage.getItem("kelas") || "";
+    const namaSiswa = sessionStorage.getItem("namaSiswa") || "[]";
+
     const formData = new URLSearchParams({
         jumlah_siswa: jumlahSiswa,
         jumlah_soal: jumlahSoal,
         r_tabel: rTabel,
         hasil: hasilAnalisis,
         nilai_siswa: JSON.stringify(data),
-        id_edit: idEdit
+        id_edit: idEdit,
+        mapel,
+        tahun_ajar: tahunAjar,
+        kelas,
+        nama_siswa: namaSiswa
     });
 
     fetch('simpan.php', {

@@ -30,51 +30,93 @@ $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
             <h2>Riwayat Analisis Butir Soal</h2>
 
             <?php if ($result->num_rows > 0): ?>
-                <?php while($row = $result->fetch_assoc()): ?>
-					<div class="card mb-5">
-						<div class="card-header">
+                <?php while($row = $result->fetch_assoc()): 
+                    $id = $row['id'];
+                    $nilai_data = json_decode($row['nilai_siswa'], true);
+                    $nama_siswa = json_decode($row['nama_siswa'], true);
+                ?>
+                <div class="card mb-5 shadow-sm">
+                    <div class="card-header bg-light position-relative">
+						<div>
 							<strong><?= date('d M Y, H:i', strtotime($row['waktu'])) ?></strong><br>
+							<small>
+								<strong>Mata Pelajaran:</strong> <?= htmlspecialchars($row['mapel']) ?> |
+								<strong>Tahun Ajar:</strong> <?= htmlspecialchars($row['tahun_ajar']) ?> |
+								<strong>Kelas:</strong> <?= htmlspecialchars($row['kelas']) ?>
+							</small><br>
 							<small>Jumlah Siswa: <?= $row['jumlah_siswa'] ?> | Jumlah Soal: <?= $row['jumlah_soal'] ?> | r Tabel: <?= $row['r_tabel'] ?></small>
 						</div>
-						<div class="card-body">
-							<?php
-							$nilai_data = json_decode($row['nilai_siswa'], true);
-							if ($nilai_data && is_array($nilai_data)):
-							?>
-								<h5>Data Nilai Siswa</h5>
-								<table class="table table-bordered">
-									<thead>
-										<tr>
-											<th>Siswa</th>
-											<?php for ($i = 1; $i <= count($nilai_data[0]); $i++): ?>
-												<th>Soal <?= $i ?></th>
-											<?php endfor; ?>
-										</tr>
-									</thead>
-									<tbody>
-										<?php foreach ($nilai_data as $i => $baris): ?>
-											<tr>
-												<td>Siswa <?= $i + 1 ?></td>
-												<?php foreach ($baris as $nilai): ?>
-													<td><?= htmlspecialchars($nilai) ?></td>
-												<?php endforeach; ?>
-											</tr>
-										<?php endforeach; ?>
-									</tbody>
-								</table>
-								<hr>
-							<?php endif; ?>
 
-							<?= $row['hasil'] ?> <!-- kesimpulan tetap di dalam card -->
-							<a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning mt-3">Edit</a>
-						</div>
+						<button class="btn btn-sm btn-primary toggle-btn position-absolute top-0 end-0 m-3" 
+							type="button" 
+							data-bs-toggle="collapse" 
+							data-bs-target="#collapse<?= $id ?>" 
+							aria-expanded="false" 
+							aria-controls="collapse<?= $id ?>">
+							Tampilkan Hasil Analisis
+						</button>
 					</div>
-				<?php endwhile; ?>
 
+
+                    <div class="collapse" id="collapse<?= $id ?>">
+                        <div class="card-body">
+                            <?php if ($nilai_data && is_array($nilai_data)): ?>
+                                <h5>Data Nilai Siswa</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Siswa</th>
+                                                <?php for ($i = 1; $i <= count($nilai_data[0]); $i++): ?>
+                                                    <th>Soal <?= $i ?></th>
+                                                <?php endfor; ?>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($nilai_data as $i => $baris): ?>
+                                                <tr>
+                                                    <td><?= isset($nama_siswa[$i]) ? htmlspecialchars($nama_siswa[$i]) : 'Siswa ' . ($i + 1) ?></td>
+                                                    <?php foreach ($baris as $nilai): ?>
+                                                        <td><?= htmlspecialchars($nilai) ?></td>
+                                                    <?php endforeach; ?>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <?php endif; ?>
+
+                            <hr>
+                            <?= $row['hasil'] ?>
+                            <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning mt-3">Edit</a>
+                        </div>
+                    </div>
+                </div>
+                <?php endwhile; ?>
             <?php else: ?>
                 <div class="alert alert-info">Belum ada hasil analisis yang disimpan.</div>
             <?php endif; ?>
         </div>
     </div>
+
+    <script>
+    // Ubah label tombol saat collapse terbuka/tertutup
+    document.addEventListener("DOMContentLoaded", () => {
+        const toggleButtons = document.querySelectorAll(".toggle-btn");
+        toggleButtons.forEach(btn => {
+            const targetId = btn.getAttribute("data-bs-target");
+            const targetEl = document.querySelector(targetId);
+
+            if (targetEl) {
+                targetEl.addEventListener("shown.bs.collapse", () => {
+                    btn.textContent = "Sembunyikan Hasil Analisis";
+                });
+                targetEl.addEventListener("hidden.bs.collapse", () => {
+                    btn.textContent = "Tampilkan Hasil Analisis";
+                });
+            }
+        });
+    });
+    </script>
 </body>
 </html>
