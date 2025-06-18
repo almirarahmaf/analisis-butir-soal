@@ -20,10 +20,23 @@ Program ini dapat digunakan untuk menganalisis butir soal pilihan ganda berdasar
 - Melihat, mengedit, dan menghapus riwayat analisis
 
 ## 🛠️ Cara Menggunakan
-- Clone repositori ini
+> **Note:** Pastikan sudah menginstal `XAMPP` atau software lainnya yang menyediakan layanan Apache dan MySQL untuk menjalankan aplikasi ini
+
+1. Clone repositori
 ```
 git clone https://github.com/almirarahmaf/analisis-butir-soal
 ```
 ```
 cd analisis-soal
 ```
+
+2. Setup database
+- Buat database MySQL
+```
+Contoh: analisis_soal
+```
+> **Note:** Tabel akan terbuat secara otomatis
+- Sesuaikan file `config.php` dengan database lokal
+- Jalankan servel lokal `contoh: XAMPP`, lalu buka `index.html` di browser
+
+## 📸 Tampilan Website
