@@ -41,10 +41,10 @@ Contoh: analisis_soal
 
 ## 📸 Tampilan Website
 - Halaman awal
-![informasi-awal](Docs/informasi-awal.png)
+![informasi-awal](docs/informasi-awal.png)
 - Halaman input dan analisis soal
-![analisis-soal](Docs/analisis-soal.png)
+![analisis-soal](docs/analisis-soal.png)
 - Halaman riwayat
-![riwayat](Docs/riwayat.png)
+![riwayat](docs/riwayat.png)
 - Halaman edit
-![edit](Docs/edit.png)
+![edit](docs/edit.png)
