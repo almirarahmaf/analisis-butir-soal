@@ -20,3 +20,10 @@ Program ini dapat digunakan untuk menganalisis butir soal pilihan ganda berdasar
 - Melihat, mengedit, dan menghapus riwayat analisis
 
 ## 🛠️ Cara Menggunakan
+- Clone repositori ini
+```
+git clone https://github.com/almirarahmaf/analisis-butir-soal
+```
+```
+cd analisis-soal
+```
