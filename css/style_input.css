@@ -14,7 +14,7 @@ body {
 /* Navbar */
 .navbar{
     background-color: #081f5c;
-    width: 99vw;
+    width: 100vw;
 }
 
 .navbar-brand{
@@ -60,7 +60,7 @@ body {
 
 /* Main Content */
 .main-content {
-    width: 100%;
+    width: 99%;
     margin-top: 20px;
 }
 
@@ -70,19 +70,34 @@ h5{
     font-weight: bold;
 }
 
+#infoHeader{
+    border: 2px solid #081f5c;
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
+    background-color: #22325e6a;
+}
+
 /* Generate Tabel */
 .table{
     border-collapse: collapse;
 }
 
-.table-bordered td,
-.table-bordered th {
+.table-bordered td{
     border: 2px solid #081f5c;
     text-align: center;
 }
 
 .table-bordered th{
     background-color: #efe1cf;
+    border: 2px solid #081f5c;
+    text-align: center;
+}
+
+td.namaSiswa,
+td.nilai-input{
+    text-align: left;
 }
 
 /* Tabel Section */
@@ -92,7 +107,6 @@ h5{
   padding: 20px;
   margin-bottom: 50px;
   box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
-  /* border: 2px solid #ddd; */
 }
 
 /* Uji Validitas */
@@ -158,7 +172,8 @@ button {
     width: max-content;
 }
 
-button:hover{
+button:hover,
+#btnCetakPDF:hover{
     background-color: white !important;
     color: #081f5c !important;
     border: 2px solid #081f5c !important;
@@ -170,7 +185,30 @@ button:hover{
     border-radius: 10px !important;
 }
 
+#btnCetakPDF{
+    border-radius: 10px !important;
+    background-color: #FFD580 !important;
+    color: #081f5c !important;
+    border: 2px solid #081f5c !important;
+}
+
 #tabelContainerWrapper {
     overflow-x: auto;
     max-width: 100%;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #hasilAnalisis, #hasilAnalisis * {
+    visibility: visible;
+  }
+
+  #hasilAnalisis {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
 }

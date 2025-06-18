@@ -5,7 +5,6 @@ $id = $_POST['id'];
 $nilai = $_POST['nilai'];
 $encoded_nilai = json_encode($nilai);
 
-// Ambil tambahan dari form/sessionStorage
 $nama_siswa = isset($_POST['nama_siswa']) ? $_POST['nama_siswa'] : '[]';
 $mapel = $_POST['mapel'] ?? '';
 $tahun_ajar = $_POST['tahun_ajar'] ?? '';
@@ -14,7 +13,6 @@ $kelas = $_POST['kelas'] ?? '';
 $jumlah_siswa = count($nilai);
 $jumlah_soal = count($nilai[0]);
 
-// Hitung total skor per siswa
 $total_skor = array_map(function($row) {
     return array_sum($row);
 }, $nilai);
@@ -23,7 +21,7 @@ $var_total = array_sum(array_map(function($s) use ($skor_mean) {
     return pow($s - $skor_mean, 2);
 }, $total_skor)) / ($jumlah_siswa - 1);
 
-// Korelasi Pearson (item-rest)
+// Korelasi Pearson
 function korelasi($x, $y) {
     $n = count($x);
     $meanX = array_sum($x) / $n;
@@ -114,7 +112,7 @@ $totalValid = count(array_filter($validitas, fn($v) => $v === 'Valid'));
 $kelayakan = $KR20 >= 0.7 && $totalValid >= $jumlah_soal * 0.7 ? 'layak digunakan' : 'perlu perbaikan lebih lanjut';
 $output .= "<div><h6>Kesimpulan</h6><p>Dari $jumlah_soal soal, $totalValid valid. Reliabilitas tes adalah " . round($KR20, 4) . " ($reliabilitas_kat). Tes $kelayakan.</p></div>";
 
-// Simpan ke DB
+// Menyimpan ke database
 $stmt = $conn->prepare("UPDATE hasil_analisis SET 
     nilai_siswa = ?, 
     nama_siswa = ?, 

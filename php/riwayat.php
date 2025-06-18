@@ -1,5 +1,13 @@
 <?php
 include 'config.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['hapus_id'])) {
+    $hapus_id = intval($_POST['hapus_id']);
+    $conn->query("DELETE FROM hasil_analisis WHERE id = $hapus_id");
+    header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+}
+
 $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
 ?>
 <!DOCTYPE html>
@@ -11,7 +19,7 @@ $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
-    <link href="style_riwayat.css" rel="stylesheet">
+    <link href="../css/style_riwayat.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-sm">
@@ -19,7 +27,7 @@ $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
             <a class="navbar-brand">Analisis Butir Soal</a>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.html">Beranda</a>
+                    <a class="nav-link" href="../index.html">Beranda</a>
                 </li>
             </ul>
         </div>
@@ -88,7 +96,18 @@ $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
 
                             <hr>
                             <?= $row['hasil'] ?>
-                            <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning mt-3">Edit</a>
+                            <div class="d-flex gap-2 mt-3">
+                                <div class="buttonEdit">
+                                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn">Edit</a>
+                                </div>
+                                <form method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                    <input type="hidden" name="hapus_id" value="<?= $row['id'] ?>">
+                                    <div class="buttonHapus">
+                                        <button type="submit" class="btn">Hapus</button>
+                                    </div>
+                                </form>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -100,7 +119,6 @@ $result = $conn->query("SELECT * FROM hasil_analisis ORDER BY waktu DESC");
     </div>
 
     <script>
-    // Ubah label tombol saat collapse terbuka/tertutup
     document.addEventListener("DOMContentLoaded", () => {
         const toggleButtons = document.querySelectorAll(".toggle-btn");
         toggleButtons.forEach(btn => {

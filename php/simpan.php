@@ -15,7 +15,6 @@ $nama_siswa = $_POST['nama_siswa'] ?? '[]';
 $id_edit = isset($_POST['id_edit']) && $_POST['id_edit'] !== "null" ? intval($_POST['id_edit']) : null;
 
 if ($id_edit) {
-    // Proses UPDATE (hasil edit)
     $stmt = $conn->prepare("UPDATE hasil_analisis 
         SET jumlah_siswa=?, jumlah_soal=?, r_tabel=?, hasil=?, nilai_siswa=?, mapel=?, tahun_ajar=?, kelas=?, nama_siswa=?, waktu=NOW() 
         WHERE id=?");
@@ -32,7 +31,6 @@ if ($id_edit) {
         $id_edit
     );
 } else {
-    // Proses INSERT (data baru)
     $stmt = $conn->prepare("INSERT INTO hasil_analisis 
         (jumlah_siswa, jumlah_soal, r_tabel, hasil, nilai_siswa, mapel, tahun_ajar, kelas, nama_siswa, waktu) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");

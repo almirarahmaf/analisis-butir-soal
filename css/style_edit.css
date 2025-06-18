@@ -1,0 +1,116 @@
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #081f5c;
+}
+
+.navbar-brand {
+    color: #F7F2EB;
+}
+
+.navbar-brand:hover {
+    color: #F7F2EB;
+}
+
+.nav-link {
+    background-color: #FFD580;
+    color: #081f5c;
+    border-radius: 15px;
+    margin-left: 20px;
+    margin-top: 2px;
+    width: 100px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #FFF9F0;
+    color: #081f5c;
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 20px;
+}
+
+h2 {
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #081f5c;
+}
+
+/* Tabel */
+.table{
+    border-collapse: collapse;
+}
+
+.table-bordered td,
+.table-bordered th {
+    border: 2px solid #081f5c;
+    text-align: center;
+}
+
+.table-bordered th{
+    background-color: #efe1cf;
+    align-items: center;
+    vertical-align: middle !important; 
+}
+
+/* Input pada Tabel */
+table input[type="number"] {
+    width: 60px;
+    text-align: center;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+/* Button */
+.btn-success,
+.btn-secondary{
+    margin-top: 30px;
+    width: max-content;
+    height: 40px;
+    border-radius: 10px;
+    box-shadow: 7px 7px 7px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s ease;
+    margin-bottom: 50px;
+}
+
+.btn-success{
+    margin-right: 15px;
+    background-color: #081f5c;
+    color: #FFD580;
+    border: 2px solid #081f5c;
+}
+
+.btn-secondary{
+    background-color: #FFD580;
+    color: #081f5c;
+    border: 2px solid #081f5c;
+}
+
+.btn-success:hover,
+.btn-secondary:hover {
+    background-color: white !important;
+    color: #081f5c !important;
+    border: 2px solid #081f5c !important;
+    transform: scale(1.1);
+}
+
+@media screen and (max-width: 768px) {
+    .main-content .container {
+        max-width: 100%;
+    }
+
+    table input[type="number"] {
+        width: 45px;
+    }
+}

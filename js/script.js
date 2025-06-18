@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const header = document.createElement("div");
         header.className = "mb-4 p-3 border bg-light rounded";
         header.innerHTML = `<strong>Mata Pelajaran:</strong> ${mapel}<br><strong>Tahun Ajaran:</strong> ${tahunAjar}<br><strong>Kelas:</strong> ${kelas}`;
+        header.id = "headerCetak";
 
         const container = document.querySelector(".main-content .container-fluid") || document.querySelector(".main-content");
         if (container) container.prepend(header);
@@ -91,7 +92,7 @@ function generateTable() {
         table += `<tr><td>${i}</td><td>${namaSiswa[i - 1] || 'Siswa ' + i}</td><td><textarea id="s${i}" class="form-control nilai-input" rows="1" placeholder="Contoh: 1 0 1 0 1"></textarea></td></tr>`;
     }
     table += '</tbody></table>';
-    container.innerHTML = table;
+    container.innerHTML = `<div id="tabelNilai">${table}</div>`;
 }
 
 function analisisSoal() {
@@ -217,7 +218,7 @@ function analisisSoal() {
     }
     output += '</tbody></table></div>';
 
-    // Bagian Distribusi Skor dengan nama asli siswa
+    // Distribusi Skor 
     let namaSiswa = JSON.parse(sessionStorage.getItem("namaSiswa")) || [];
     output += '<div class="section distribusi"><h6>Distribusi Total Skor Siswa</h6><table class="table table-bordered"><thead><tr><th>Siswa</th><th>Total Skor</th><th>Kategori</th></tr></thead><tbody>';
     sorted.forEach((s, i) => {
@@ -227,7 +228,7 @@ function analisisSoal() {
     });
     output += `</tbody></table><p><strong>Varians Skor Total:</strong> ${totalVar.toFixed(4)}</p></div>`;
 
-    // Hitung dominasi kesukaran
+    // Dominasi Kesukaran
     let kategoriKesukaran = { Sukar: 0, Sedang: 0, Mudah: 0 };
     for (let j = 0; j < jumlahSoal; j++) {
         let kategori = p[j] < 0.31 ? 'Sukar' : (p[j] < 0.71 ? 'Sedang' : 'Mudah');
@@ -235,7 +236,7 @@ function analisisSoal() {
     }
     let dominanKesukaran = Object.entries(kategoriKesukaran).sort((a,b)=>b[1]-a[1])[0][0];
 
-    // Hitung dominasi daya pembeda
+    // Dominasi Daya Pembeda
     let kategoriPembeda = { 'Sangat Baik':0, 'Baik':0, 'Cukup':0, 'Buruk':0 };
     for (let j = 0; j < jumlahSoal; j++) {
         let atasBenar = atas.reduce((sum, s) => sum + s.row[j], 0);
@@ -246,7 +247,7 @@ function analisisSoal() {
     }
     let dominanPembeda = Object.entries(kategoriPembeda).sort((a,b)=>b[1]-a[1])[0][0];
 
-    // Tentukan kelayakan
+    // Kelayakan
     let totalValid = validitas.filter(v => v === 'Valid').length;
     let layak = (KR20 >= 0.7 && totalValid >= jumlahSoal * 0.7) 
         ? "layak digunakan" 
@@ -259,6 +260,94 @@ function analisisSoal() {
 
     hasilAnalisis = output;
     document.getElementById('hasilAnalisis').innerHTML = output;
+
+    if (!document.getElementById("btnCetakPDF")) {
+        const cetakBtn = document.createElement("button");
+        cetakBtn.innerText = "Cetak PDF";
+        cetakBtn.className = "btn btn-danger mt-3 px-4 py-2 fw-bold rounded-pill";
+        cetakBtn.id = "btnCetakPDF";
+        cetakBtn.onclick = cetakPDF;
+        document.getElementById('hasilAnalisis').appendChild(cetakBtn);
+    }
+}
+
+function getTabelNilaiStatik() {
+    const namaSiswa = JSON.parse(sessionStorage.getItem("namaSiswa")) || [];
+    let html = `
+        <h5>Daftar Nilai Siswa</h5>
+        <table class="table table-bordered" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="text-align: center;">No</th>
+                    <th style="text-align: center;">Nama Siswa</th>
+                    <th style="text-align: center;">Nilai</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    for (let i = 1; i <= jumlahSiswa; i++) {
+        const nama = namaSiswa[i - 1] || `Siswa ${i}`;
+        const nilai = document.getElementById(`s${i}`)?.value.trim() || "-";
+        html += `
+            <tr>
+                <td style="text-align: center;">${i}</td>
+                <td style="text-align: left;">${nama}</td>
+                <td style="text-align: left;">${nilai}</td>
+            </tr>
+        `;
+    }
+
+    html += `</tbody></table>`;
+
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div;
+}
+
+function cetakPDF() {
+    const header = document.getElementById("headerCetak");
+    const analisis = document.getElementById("hasilAnalisis");
+
+    const wrapper = document.createElement("div");
+    wrapper.id = "cetakGabungan";
+    wrapper.style.padding = "20px";
+    wrapper.style.backgroundColor = "#fff";
+    wrapper.style.color = "#000";
+    wrapper.style.position = "relative";
+    wrapper.style.zIndex = "10000";
+
+    if (header) wrapper.appendChild(header.cloneNode(true));
+
+    const tabelStatik = getTabelNilaiStatik();
+    wrapper.appendChild(tabelStatik);
+
+    if (analisis) {
+        const analisisClone = analisis.cloneNode(true);
+        const btn = analisisClone.querySelector("#btnCetakPDF");
+        if (btn) btn.remove();
+        wrapper.appendChild(analisisClone);
+    }
+
+    document.body.appendChild(wrapper);
+
+    requestAnimationFrame(() => {
+        const opt = {
+            margin: 0.5,
+            filename: `analisis_soal_${new Date().toISOString().slice(0, 10)}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                scrollY: 0
+            },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+        };
+
+        html2pdf().set(opt).from(wrapper).save().then(() => {
+            document.body.removeChild(wrapper);
+        });
+    });
 }
 
 function simpanHasil() {
@@ -292,7 +381,7 @@ function simpanHasil() {
         nama_siswa: namaSiswa
     });
 
-    fetch('simpan.php', {
+    fetch('/analisis-soal/php/simpan.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData
@@ -301,7 +390,7 @@ function simpanHasil() {
     .then(data => {
         alert("Data berhasil disimpan.");
         sessionStorage.clear();
-        window.location.href = "riwayat.php";
+        window.location.href = "/analisis-soal/php/riwayat.php";
     })
     .catch(err => {
         alert("Gagal menyimpan data: " + err);
