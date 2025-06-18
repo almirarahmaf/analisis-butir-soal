@@ -40,3 +40,11 @@ Contoh: analisis_soal
 - Jalankan servel lokal `contoh: XAMPP`, lalu buka `index.html` di browser
 
 ## 📸 Tampilan Website
+- Halaman awal
+![informasi-awal](Docs/informasi-awal.png)
+- Halaman input dan analisis soal
+![analisis-soal](Docs/analisis-soal.png)
+- Halaman riwayat
+![riwayat](Docs/riwayat.png)
+- Halaman edit
+![edit](Docs/edit.png)
